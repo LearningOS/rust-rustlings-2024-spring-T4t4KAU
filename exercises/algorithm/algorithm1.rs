@@ -14,6 +14,7 @@ struct Node<T> {
 }
 
 impl<T> Node<T> {
+    // 创建结点
     fn new(t: T) -> Node<T> {
         Node {
             val: t,
@@ -34,6 +35,7 @@ impl<T> Default for LinkedList<T> {
     }
 }
 
+// 链表
 impl<T> LinkedList<T> {
     pub fn new() -> Self {
         Self {
@@ -43,7 +45,9 @@ impl<T> LinkedList<T> {
         }
     }
 
+    // 添加结点
     pub fn add(&mut self, obj: T) {
+        // 动态分配
         let mut node = Box::new(Node::new(obj));
         node.next = None;
         let node_ptr = Some(unsafe { NonNull::new_unchecked(Box::into_raw(node)) });
@@ -68,14 +72,32 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+	pub fn merge(mut list_a: LinkedList<T>, mut list_b: LinkedList<T>) -> Self  {
+        let mut merged_list = LinkedList::new();
+        let mut current_a = list_a.start;
+        let mut current_b = list_b.start;
+
+        while let (Some(node_a), Some(node_b)) = (current_a.as_mut(), current_b.as_mut()) {
+            if node_a.val <= node_b.val {
+                merged_list.add(node_a.val);
+                current_a = node_a.next.take();
+            } else {
+                merged_list.add(node_b.val);
+                current_b = node_b.next.take();
+            }
         }
+
+        while let Some(node_a) = current_a {
+            merged_list.add(node_a.val);
+            current_a = node_a.next;
+        }
+
+        while let Some(node_b) = current_b {
+            merged_list.add(node_b.val);
+            current_b = node_b.next;
+        }
+
+        merged_list
 	}
 }
 
